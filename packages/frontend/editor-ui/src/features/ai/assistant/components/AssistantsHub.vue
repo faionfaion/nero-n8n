@@ -86,6 +86,10 @@ function onClose() {
 	chatPanelStore.close();
 }
 
+function onSwitchMode(mode: import('../chatPanelState.store').ChatPanelMode) {
+	chatPanelStore.switchMode(mode);
+}
+
 function onSlideEnterComplete() {
 	slideAnimationComplete.value = true;
 	if (isNeroMode.value) {
@@ -155,17 +159,36 @@ onBeforeUnmount(() => {
 			>
 				<div :style="{ width: `${chatWidth}px` }" :class="$style.wrapper">
 					<div :class="$style.assistantContent">
-						<NeroChatPanel v-if="isNeroMode" ref="neroChatPanelRef" @close="onClose" />
+						<NeroChatPanel v-if="isNeroMode" ref="neroChatPanelRef" @close="onClose">
+							<template #header>
+								<HubSwitcher
+									:is-build-mode="isBuildMode"
+									:active-mode="chatPanelStore.activeMode"
+									@toggle="toggleAssistantMode"
+									@switch-mode="onSwitchMode"
+								/>
+							</template>
+						</NeroChatPanel>
 						<AskAssistantBuild v-else-if="isBuildMode" ref="askAssistantBuildRef" @close="onClose">
 							<template v-if="canToggleModes" #header>
-								<HubSwitcher :is-build-mode="isBuildMode" @toggle="toggleAssistantMode" />
+								<HubSwitcher
+									:is-build-mode="isBuildMode"
+									:active-mode="chatPanelStore.activeMode"
+									@toggle="toggleAssistantMode"
+									@switch-mode="onSwitchMode"
+								/>
 							</template>
 						</AskAssistantBuild>
 						<AskAssistantChat v-else ref="askAssistantChatRef" @close="onClose">
 							<!-- Header switcher is only visible when both modes are available in current view -->
 							<template v-if="canToggleModes" #header>
 								<AskModeCoachmark :visible="canShowCoachmark" @dismiss="onDismissCoachmark">
-									<HubSwitcher :is-build-mode="isBuildMode" @toggle="toggleAssistantMode" />
+									<HubSwitcher
+										:is-build-mode="isBuildMode"
+										:active-mode="chatPanelStore.activeMode"
+										@toggle="toggleAssistantMode"
+										@switch-mode="onSwitchMode"
+									/>
 								</AskModeCoachmark>
 							</template>
 						</AskAssistantChat>

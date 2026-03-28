@@ -9,7 +9,7 @@ import {
 	EDITABLE_CANVAS_VIEWS,
 } from '@/app/constants';
 import type { VIEWS } from '@/app/constants';
-import { ASSISTANT_ENABLED_VIEWS, BUILDER_ENABLED_VIEWS } from './constants';
+import { ASSISTANT_ENABLED_VIEWS, BUILDER_ENABLED_VIEWS, NERO_ENABLED_VIEWS } from './constants';
 import { useChatPanelStateStore, type ChatPanelMode } from './chatPanelState.store';
 import { useAssistantStore } from './assistant.store';
 import { useBuilderStore } from './builder.store';
@@ -63,6 +63,12 @@ export const useChatPanelStore = defineStore(STORES.CHAT_PANEL, () => {
 	const isAssistantModeActive = computed(() => chatPanelStateStore.activeMode === 'assistant');
 	const isBuilderModeActive = computed(() => chatPanelStateStore.activeMode === 'builder');
 
+	function getEnabledViews(mode: ChatPanelMode): readonly VIEWS[] {
+		if (mode === 'nero') return NERO_ENABLED_VIEWS;
+		if (mode === 'assistant') return ASSISTANT_ENABLED_VIEWS;
+		return BUILDER_ENABLED_VIEWS;
+	}
+
 	const canShowAiButtonOnCanvas = computed(
 		() =>
 			settingsStore.isAiAssistantOrBuilderEnabled &&
@@ -82,10 +88,7 @@ export const useChatPanelStore = defineStore(STORES.CHAT_PANEL, () => {
 		chatPanelStateStore.showCoachmark = showCoachmark;
 
 		// Check if the mode is enabled in the current view
-		const enabledViews =
-			chatPanelStateStore.activeMode === 'assistant'
-				? ASSISTANT_ENABLED_VIEWS
-				: BUILDER_ENABLED_VIEWS;
+		const enabledViews = getEnabledViews(chatPanelStateStore.activeMode);
 		const currentRoute = route?.name;
 
 		if (!isEnabledView(currentRoute, enabledViews)) {
@@ -155,7 +158,7 @@ export const useChatPanelStore = defineStore(STORES.CHAT_PANEL, () => {
 		const resolved = resolveMode(mode);
 
 		// Check if the mode is enabled in the current view
-		const enabledViews = resolved === 'assistant' ? ASSISTANT_ENABLED_VIEWS : BUILDER_ENABLED_VIEWS;
+		const enabledViews = getEnabledViews(resolved);
 		const currentRoute = route?.name;
 
 		if (!isEnabledView(currentRoute, enabledViews)) {
@@ -240,10 +243,7 @@ export const useChatPanelStore = defineStore(STORES.CHAT_PANEL, () => {
 				return;
 			}
 
-			const enabledViews =
-				chatPanelStateStore.activeMode === 'assistant'
-					? ASSISTANT_ENABLED_VIEWS
-					: BUILDER_ENABLED_VIEWS;
+			const enabledViews = getEnabledViews(chatPanelStateStore.activeMode);
 
 			if (!isEnabledView(newRoute, enabledViews)) {
 				close();

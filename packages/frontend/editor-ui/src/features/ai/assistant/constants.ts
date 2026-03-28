@@ -18,3 +18,12 @@ export const ASSISTANT_ENABLED_VIEWS = [
  * Views where the Builder chat panel can be shown
  */
 export const BUILDER_ENABLED_VIEWS = [...EDITABLE_CANVAS_VIEWS];
+
+/**
+ * Views where the NERO chat panel can be shown
+ */
+export const NERO_ENABLED_VIEWS = [
+	...EDITABLE_CANVAS_VIEWS,
+	VIEWS.WORKFLOWS,
+	VIEWS.PROJECTS_WORKFLOWS,
+];
