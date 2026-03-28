@@ -8,6 +8,7 @@ import { ASK_AI_SLIDE_IN_DURATION_MS, ASK_AI_SLIDE_OUT_DURATION_MS } from '@/app
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import AskAssistantBuild from './Agent/AskAssistantBuild.vue';
 import AskAssistantChat from './Chat/AskAssistantChat.vue';
+import NeroChatPanel from '@/features/nero/components/NeroChatPanel.vue';
 import AskModeCoachmark from './AskModeCoachmark.vue';
 import { useAskModeCoachmark } from '../composables/useAskModeCoachmark';
 
@@ -43,6 +44,9 @@ watch(
 
 const askAssistantBuildRef = ref<InstanceType<typeof AskAssistantBuild>>();
 const askAssistantChatRef = ref<InstanceType<typeof AskAssistantChat>>();
+const neroChatPanelRef = ref<InstanceType<typeof NeroChatPanel>>();
+
+const isNeroMode = computed(() => chatPanelStore.activeMode === 'nero');
 
 const chatWidth = computed(() => chatPanelStore.width);
 const slideInDuration = `${ASK_AI_SLIDE_IN_DURATION_MS}ms`;
@@ -84,7 +88,9 @@ function onClose() {
 
 function onSlideEnterComplete() {
 	slideAnimationComplete.value = true;
-	if (isBuildMode.value) {
+	if (isNeroMode.value) {
+		neroChatPanelRef.value?.focusInput();
+	} else if (isBuildMode.value) {
 		askAssistantBuildRef.value?.focusInput();
 	} else {
 		askAssistantChatRef.value?.focusInput();
@@ -149,7 +155,8 @@ onBeforeUnmount(() => {
 			>
 				<div :style="{ width: `${chatWidth}px` }" :class="$style.wrapper">
 					<div :class="$style.assistantContent">
-						<AskAssistantBuild v-if="isBuildMode" ref="askAssistantBuildRef" @close="onClose">
+						<NeroChatPanel v-if="isNeroMode" ref="neroChatPanelRef" @close="onClose" />
+						<AskAssistantBuild v-else-if="isBuildMode" ref="askAssistantBuildRef" @close="onClose">
 							<template v-if="canToggleModes" #header>
 								<HubSwitcher :is-build-mode="isBuildMode" @toggle="toggleAssistantMode" />
 							</template>
