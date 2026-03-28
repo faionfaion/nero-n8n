@@ -1,0 +1,4 @@
+FROM n8nio/n8n:2.13.4
+
+# Overlay custom editor-ui build (NERO chat panel)
+COPY --chown=node:node packages/frontend/editor-ui/dist/ /usr/local/lib/node_modules/n8n/node_modules/n8n-editor-ui/dist/
