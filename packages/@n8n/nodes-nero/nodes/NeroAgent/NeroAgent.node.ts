@@ -167,13 +167,13 @@ export class NeroAgent implements INodeType {
 			if (!result.success) {
 				throw new NodeOperationError(
 					this.getNode(),
-					result.error || 'Python bridge execution failed',
+					String(result.error || 'Python bridge execution failed'),
 					{ itemIndex: i },
 				);
 			}
 
 			returnData.push({
-				json: result,
+				json: result as Record<string, string | number | boolean | null | object>,
 				pairedItem: { item: i },
 			});
 		}

@@ -1813,6 +1813,16 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/@n8n/nodes-nero:
+    dependencies:
+      n8n-workflow:
+        specifier: workspace:*
+        version: link:../../workflow
+    devDependencies:
+      typescript:
+        specifier: 5.9.2
+        version: 5.9.2
+
   packages/@n8n/permissions:
     dependencies:
       zod:

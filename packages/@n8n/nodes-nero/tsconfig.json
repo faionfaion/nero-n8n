@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"module": "commonjs",
+		"target": "es2022",
+		"lib": ["es2022"],
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"declaration": true,
+		"sourceMap": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true
+	},
+	"include": ["nodes/**/*.ts", "credentials/**/*.ts"]
+}

@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 const N8N_URL = process.env.N8N_URL || 'http://localhost:5678';
+const N8N_EMAIL = process.env.N8N_EMAIL || 'nero@faion.net';
+const N8N_PASSWORD = process.env.N8N_PASSWORD || 'dmMbdvXZrebFjhAYbFICcXlyHO83WPp';
 
 test.describe('NERO n8n Integration', () => {
 	test('n8n is accessible and serves custom build', async ({ request }) => {
@@ -168,5 +170,35 @@ print('VALIDATE_OK')
 			{ encoding: 'utf-8', timeout: 15000 },
 		);
 		expect(result.trim()).toContain('VALIDATE_OK');
+	});
+
+	test('UI: can login and access workflow editor', async ({ page }) => {
+		// Login via API to get session cookie
+		const loginResp = await page.request.post(`${N8N_URL}/rest/login`, {
+			data: { emailOrLdapLoginId: N8N_EMAIL, password: N8N_PASSWORD },
+		});
+		expect(loginResp.ok()).toBeTruthy();
+
+		// Navigate to workflows
+		await page.goto(`${N8N_URL}/home/workflows`);
+		await page.waitForLoadState('networkidle');
+
+		// Page should load (not redirect to signin)
+		const url = page.url();
+		expect(url).not.toContain('/signin');
+	});
+
+	test('UI: NERO mode button present in JS bundle', async ({ request }) => {
+		// Verify nero-mode-switch data-test-id is in the bundle
+		const indexResp = await request.get(`${N8N_URL}/`);
+		const html = await indexResp.text();
+		const jsMatch = html.match(/\/assets\/index-[a-zA-Z0-9]+\.js/);
+		expect(jsMatch).toBeTruthy();
+
+		const bundleResp = await request.get(`${N8N_URL}${jsMatch![0]}`);
+		const bundle = await bundleResp.text();
+		expect(bundle).toContain('nero-mode-switch');
+		expect(bundle).toContain('nero-mode-active');
+		expect(bundle).toContain('switchToNero');
 	});
 });
