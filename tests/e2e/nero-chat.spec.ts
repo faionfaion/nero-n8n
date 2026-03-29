@@ -103,7 +103,7 @@ test.describe('NERO n8n Integration', () => {
 	test('NERO Python tools: workflow + node CRUD', async ({}) => {
 		const { execSync } = await import('node:child_process');
 		const result = execSync(
-			`N8N_API_KEY="${process.env.N8N_API_KEY}" PYTHONPATH=/home/nero/workspace/nero-core/src python3 -c "
+			`N8N_API_KEY="${process.env.N8N_API_KEY}" PYTHONPATH=/srv/nero/nero-core/src python3 -c "
 from nero_core.tools.n8n_tool import n8n_workflow_tool, n8n_node_tool
 import json, os, httpx
 
